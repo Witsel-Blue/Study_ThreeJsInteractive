@@ -28,7 +28,7 @@ const init = () => {
 
     document.body.appendChild(renderer.domElement);
 
-    //우주 공간 만들기
+    //우주 공간
     {
         const imgLoader = new THREE.TextureLoader();
         imgLoader.load("./img/universe.jpg", (data) => {
@@ -42,8 +42,8 @@ const init = () => {
         });
     }
 
-    //지구 만들기
-    const earthMap = new THREE.TextureLoader().load("./img/Albedo.jpg");
+    //지구
+    const earthMap = new THREE.TextureLoader().load("./img/albedo.jpg");
     const material_earth = new THREE.MeshPhongMaterial({
         map: earthMap,
     });
@@ -53,7 +53,7 @@ const init = () => {
     scene.add(earth);
 
     //구름
-    const cloudMap = new THREE.TextureLoader().load("./img/Clouds.png");
+    const cloudMap = new THREE.TextureLoader().load("./img/clouds.png");
     const material_cloud = new THREE.MeshPhongMaterial({
         map: cloudMap,
         transparent: true,
