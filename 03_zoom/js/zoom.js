@@ -29,6 +29,10 @@ const init = () => {
     //그림자
     document.body.appendChild(renderer.domElement);
 
+    // dom에 canvas 오버랩
+    document.querySelector("#canvasWrap").appendChild(renderer.domElement);
+
+
     //안개
     const near = 100;
     const far = 300;
@@ -66,6 +70,7 @@ const addBox = (i) => {
     let y = Math.random() * 50 - 50 / 2;
     let z = -i * depthNum;
     boxMesh.position.set(x, y, z);
+    boxMesh.name = `imgBox_${i}`;
     boxGroup.add(boxMesh);
 };
 
@@ -82,6 +87,45 @@ const addLight = (...pos) => {
     // scene.add(helper);
 
     scene.add(light);
+};
+
+// 레이캐스터
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+const onPointerMove = (event) => {
+    pointer.x = (event.clientX / WIDTH) * 2 - 1;
+    pointer.y = -(event.clientY / HEIGHT) * 2 + 1;
+
+    raycaster.setFromCamera(pointer, camera);
+
+    const intersects = raycaster.intersectObjects(boxGroup.children);
+
+    //마우스 오버 시 빨간색으로
+    // for (let i = 0; i < intersects.length; i++) {
+    //     intersects[i].object.material.color.set(0xff0000);
+    // }
+
+    if (intersects.length > 0) {
+        document.querySelector("body").style.cursor = "pointer";
+    } else {
+        document.querySelector("body").style.cursor = "auto";
+    }
+};
+
+const onDocumentMouseDown = (event) => {
+    const vector = new THREE.Vector3(pointer.x, pointer.y, 0.5);
+
+    vector.unproject(camera);
+    raycaster.setFromCamera(pointer, camera);
+
+    const intersects = raycaster.intersectObjects(boxGroup.children);
+
+    if (intersects.length > 0) {
+        const item = intersects[0].object;
+        const itemName = item.name;
+        console.log(itemName);
+    }
 };
 
 const animate = () => {
@@ -131,3 +175,5 @@ window.addEventListener("mousemove", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
 });
+window.addEventListener("pointermove", onPointerMove);
+window.addEventListener("mousedown", onDocumentMouseDown);
