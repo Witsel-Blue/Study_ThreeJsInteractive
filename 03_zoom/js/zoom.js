@@ -4,9 +4,48 @@ import { OrbitControls } from "https://unpkg.com/three@0.108.0/examples/jsm/cont
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
 let scene, camera, renderer, controls;
-let boxGroup = new THREE.Group();
+let boxGroup = new THREE.Object3D();
 
-const totalNum = 9; //전체 박스 갯수
+const dataArr = [
+    {
+        'img': './img/img0.png',
+        'link': 'http://witselblue.site/project/monimo',
+    },
+    {
+        'img': './img/img1.png',
+        'link': 'http://witselblue.site/project/OnlineMemorial',
+    },
+    {
+        'img': './img/img2.png',
+        'link': 'http://witselblue.site/project/DCAMP',
+    },
+    {
+        'img': './img/img3.png',
+        'link': 'http://witselblue.site/project/OxfamVirtualWalker',
+    },
+    {
+        'img': './img/img4.png',
+        'link': 'http://witselblue.site/project/DCDCenter',
+    },
+    {
+        'img': './img/img5.png',
+        'link': 'http://witselblue.site/project/cabinnet',
+    },
+    {
+        'img': './img/img6.png',
+        'link': 'http://witselblue.site/project/KACE',
+    },
+    {
+        'img': './img/img7.png',
+        'link': 'http://witselblue.site/project/RNJOB',
+    },
+    {
+        'img': './img/img8.png',
+        'link': 'http://witselblue.site/project/portfolio',
+    },
+];
+
+const totalNum = dataArr.length - 1;  //전체 박스 갯수
 const depthNum = 30; //박스와 박스 사이 z값. 깊이
 const totalDepthNum = totalNum * depthNum; //전체 깊이
 
@@ -19,15 +58,15 @@ let mouseX = 0,
 
 const init = () => {
     scene = new THREE.Scene();
-    scene.background = new THREE.Color("#000000");
+    scene.background = new THREE.Color("#000");
     camera = new THREE.PerspectiveCamera(75, WIDTH / HEIGHT, 1, 1000);
     camera.position.set(0, 0, 50);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(WIDTH, HEIGHT);
     renderer.shadowMap.enabled = true;
     //그림자
-    document.body.appendChild(renderer.domElement);
+    // document.body.appendChild(renderer.domElement);
 
     // dom에 canvas 오버랩
     document.querySelector("#canvasWrap").appendChild(renderer.domElement);
@@ -36,7 +75,7 @@ const init = () => {
     //안개
     const near = 100;
     const far = 300;
-    const color = "#000000";
+    const color = "#000";
     scene.fog = new THREE.Fog(color, near, far);
 
     // const axes = new THREE.AxesHelper(150);
@@ -58,11 +97,12 @@ const init = () => {
 
 //박스 추가
 const addBox = (i) => {
-    const imageMap = new THREE.TextureLoader().load(
-        "./img/img" + i + ".png"
-    );
+    // const imgMap = new THREE.TextureLoader().load(
+    //     "./img/img" + i + ".png"
+    // );
+    const imgMap = new THREE.TextureLoader().load(dataArr[i].img);
 
-    const material = new THREE.SpriteMaterial({ map: imageMap });
+    const material = new THREE.SpriteMaterial({ map: imgMap });
     const boxMesh = new THREE.Sprite(material);
     boxMesh.scale.set(32, 18, 1);
 
@@ -71,6 +111,7 @@ const addBox = (i) => {
     let z = -i * depthNum;
     boxMesh.position.set(x, y, z);
     boxMesh.name = `imgBox_${i}`;
+    boxMesh.link = dataArr[i].link;
     boxGroup.add(boxMesh);
 };
 
@@ -123,8 +164,7 @@ const onDocumentMouseDown = (event) => {
 
     if (intersects.length > 0) {
         const item = intersects[0].object;
-        const itemName = item.name;
-        console.log(itemName);
+        window.open(item.link, '_parent');
     }
 };
 
@@ -155,7 +195,6 @@ const stageResize = () => {
 };
 
 const scrollFunc = (event) => {
-    // console.log(event.deltaY);
     if (event.deltaY < 0) {
         if (targetZNum > 0) {
             targetZNum -= depthNum;
