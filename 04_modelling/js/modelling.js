@@ -31,9 +31,6 @@ const init = () => {
     //카메라 컨트롤
     controls = new OrbitControls(camera, renderer.domElement);
 
-    const axes = new THREE.AxesHelper(150);
-    scene.add(axes);
-
     //바닥
     const geometry = new THREE.CylinderGeometry(400, 400, 5, 100);
     const material = new THREE.MeshPhongMaterial({
@@ -64,8 +61,6 @@ const init = () => {
         light.shadow.radius = 5;
 
         const sphereSize = 10;
-        const pointLightHelper = new THREE.PointLightHelper(light, sphereSize);
-        scene.add(pointLightHelper);
         scene.add(light);
     }
 
@@ -97,6 +92,7 @@ const init = () => {
 
             if (mixers.length > 0) {
                 action = object.mixer.clipAction(object.animations[0]);
+                // action.play();
             }
 
             object.scale.set(0.3, 0.3, 0.3);
@@ -119,8 +115,9 @@ let keyCode = 0;
 const onDocumentKeyDown = (event) => {
     keyCode = event.key || event.keyCode;
 
-    if (keyCode == "Control" || keyCode == 17) {
+    if (keyCode == "Enter" || keyCode == 13) {
         action.play();
+        // action.setLoop(0, 1);
     } else {
         action.stop();
     }
@@ -165,19 +162,15 @@ const fbxLoadFunc = (modelName) => {
             });
 
             //애니메이션
-            // if (object.animations != undefined) {
-            //     object.mixer = new THREE.AnimationMixer(object);
-            //     // console.log(object.mixer);
+            if (object.animations != undefined) {
+                object.mixer = new THREE.AnimationMixer(object);
+                mixers.push(object.mixer);
 
-            //     mixers.push(object.mixer);
-            //     // console.log(mixers.length);
-
-            //     if (mixers.length > 0) {
-            //         var action = object.mixer.clipAction(object.animations[0]);
-            //         //console.log(object.animations);
-            //         action.play();
-            //     }
-            // }
+                if (mixers.length > 0) {
+                    var action = object.mixer.clipAction(object.animations[0]);
+                    action.play();
+                }
+            }
 
             //크기
             let scaleNum = 0.4;
